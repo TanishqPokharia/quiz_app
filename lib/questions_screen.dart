@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:quiz_app/answer_button.dart';
+import 'package:quiz_app/data/questions.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class QuestionsScreen extends StatefulWidget {
+  const QuestionsScreen({super.key, required this.onSelectAnswer});
+  final void Function(String answer) onSelectAnswer;
+  @override
+  State<QuestionsScreen> createState() {
+    return _QuestionsScreen();
+  }
+}
+
+class _QuestionsScreen extends State<QuestionsScreen> {
+  var currentQuestionsIndex = 0;
+  void answerQuestion(String selectedAnswer) {
+    widget.onSelectAnswer(
+        selectedAnswer); //this widget class lets you access parent class, it is a built in feature of the state class
+    setState(() {
+      currentQuestionsIndex++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentQuestion = questions[currentQuestionsIndex];
+    return SizedBox(
+      width: double.infinity,
+      child: Container(
+        margin: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              currentQuestion.question,
+              style: GoogleFonts.montserrat(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            ...currentQuestion.getShuffledAnswers().map((answer) {
+              // using the map function which returns an iterable, along with spread operator ... to pull out the iterable elements i.e our widgets from the shuffled list of answers ,so we are dynamically creating our answer buttons
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: AnswerButton(
+                    text: answer,
+                    onTap: () {
+                      answerQuestion(answer);
+                    }),
+              );
+            })
+          ],
+        ),
+      ),
+    );
+  }
+}
